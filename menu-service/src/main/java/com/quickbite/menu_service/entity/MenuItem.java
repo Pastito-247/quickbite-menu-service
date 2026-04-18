@@ -29,5 +29,5 @@ public class MenuItem {
     private String category;
 
     @Column(nullable = false)
-    private Boolean available = true;
+    private boolean available = true;
 }

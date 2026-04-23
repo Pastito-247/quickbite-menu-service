@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Microservicio de Menú
+  menu-service:
+    build: 
+      context: ./menu-service
+      dockerfile: Dockerfile
+    container_name: quickbite-menu-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - DB_USERNAME=quickbite_user
+      - DB_PASSWORD=quickbite_password
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/quickbite_menu_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SERVER_PORT=8081
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - quickbite-network
+    volumes:
+      - ./menu-service/logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Base de datos MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: quickbite-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=quickbite_menu_db
+      - MYSQL_USER=quickbite_user
+      - MYSQL_PASSWORD=quickbite_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - quickbite-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # phpMyAdmin para administración de MySQL (opcional)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: quickbite-phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - quickbite-network
+    restart: unless-stopped
+
+  # Mock del microservicio de Inventario (para desarrollo)
+  mock-inventory-service:
+    image: mockserver/mockserver:latest
+    container_name: quickbite-mock-inventory
+    ports:
+      - "8082:1080"
+    environment:
+      - MOCKSERVER_PROPERTY_FILE=/config/mockserver.properties
+    volumes:
+      - ./mocks/inventory:/config
+    networks:
+      - quickbite-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  quickbite-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

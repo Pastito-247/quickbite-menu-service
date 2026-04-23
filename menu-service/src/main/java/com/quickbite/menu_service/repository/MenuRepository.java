@@ -13,6 +13,8 @@ public interface MenuRepository extends JpaRepository<MenuItem, Long>{
     
     List<MenuItem> findByAvailableTrue();
 
+    List<MenuItem> findByAvailableFalse();
+
     List<MenuItem> findByCategory(String category);
 
 }

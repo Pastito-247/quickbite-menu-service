@@ -2,8 +2,10 @@ package com.quickbite.menu_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 public class MenuServiceApplication {
 
 	public static void main(String[] args) {

@@ -11,8 +11,9 @@ services:
       - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
-      - DB_USERNAME=root
-      - DB_PASSWORD=root
+      - DB_USERNAME=quickbite_user
+      - DB_PASSWORD=quickbite_password
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/quickbite_menu_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SERVER_PORT=8081
     depends_on:
       mysql:

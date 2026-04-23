@@ -106,7 +106,7 @@ quickbite-menu-service/
 | `DB_USERNAME` | Usuario de MySQL | `root` |
 | `DB_PASSWORD` | Contraseña de MySQL | `root` |
 | `SERVER_PORT` | Puerto del servicio | `8081` |
-| `INVENTORY_SERVICE_URL` | URL del servicio de inventario | `http://localhost:8082` |
+| `INVENTORY_SERVICE_URL` | URL del servicio de inventario | `cambiar` |
 
 ### Perfiles
 
